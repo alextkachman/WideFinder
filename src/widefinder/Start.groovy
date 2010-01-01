@@ -7,10 +7,25 @@ import java.nio.channels.FileChannel
 @Typed
 class Start
 {
-//    private static final int     CPU_NUM   = Runtime.getRuntime().availableProcessors();
-//    private static final File DATA_FILE = new File( "e:/Projects/groovy-booster/data/O.Big.log" );
-    private static final int  R         = (( int ) '\r' );
-    private static final int  N         = (( int ) '\n' );
+    /**
+     * Array of booleans where only "end of line" indices are set to "true"
+     */
+/*
+    private static final boolean[] BOOLEANS = {
+                                                    boolean[] b = new boolean[ 256 ];
+                                                    b[ ( int ) '\r' ] = true;
+                                                    b[ ( int ) '\n' ] = true;
+                                                    return  b;
+                                              }();
+*/
+    private static final boolean[] BOOLEANS = getBooleans();
+    private static       boolean[]            getBooleans()
+    {
+        boolean[] b       = new boolean[ 256 ];
+        b[ ( int ) '\r' ] = true;
+        b[ ( int ) '\n' ] = true;
+        return  b;
+    };
 
 
     public static void main ( String[] args )
@@ -45,7 +60,7 @@ class Start
                 }
 
                 buffer = null;
-                for ( int j in ( 1 .. 10 )){ System.gc(); Thread.sleep( 1000 ); }
+                for ( int j in ( 1 .. 10 )){ System.gc(); sleep( 1000 ); }
             }
         }
     }
@@ -84,6 +99,7 @@ class Start
              */
             int beginIndex = 0;
             int chunkSize  = ( buffer.position() / cpuNum ); // Approximate size of byte[] chunk to be given to each thread
+
             if ( chunkSize < 1024 ) { chunkSize = buffer.position() }
 
             // CHUNK SIZE MAY BE TOO SMALLLLLLLLLLLLLLLLLLLLLLLLLLLLL -------------- (remain of file, too many threads)
@@ -152,12 +168,12 @@ class Start
         return linesCounter;
     }
 
+
    /**
-    * Determines if byte specified is an end-of-line character
+    * Determines if byte specified is an end-of-line character (0x0D or 0x0A)
     */
     private static boolean endOfLine( byte b )
     {
-        // NEEEEEEEDDDDDDDDDD Faster mapping ????????????????????
-        return (( b == 0x0D ) || ( b == 0x0A ));
+        return BOOLEANS[ b ];
     }
 }
