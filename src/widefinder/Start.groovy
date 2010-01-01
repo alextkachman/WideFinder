@@ -17,6 +17,7 @@ class Start
                                                     b[ ( int ) '\n' ] = true;
                                                     return  b;
                                               }();
+    private static final boolean[] BOOLEANS = ( 0 .. 255 ).collect{ ( it == ( int ) '\r' ) || ( it == ( int ) '\n' ) }
 */
     private static final boolean[] BOOLEANS = getBooleans();
     private static       boolean[]            getBooleans()
@@ -77,86 +78,91 @@ class Start
         long totalBytesRead = 0;
 
         /**
-         * Reading from channel until it ends
-         *
-         * REMAINING BUFFER
+         * Reading from file channel into buffer (until it ends)
          */
         for ( int remaining = 0; ( channel.position() < channel.size()); )
         {
             int    bytesRead = channel.read( buffer );
             byte[] array     = buffer.array();
             totalBytesRead  += bytesRead;
-            boolean eof      = ( channel.position() == channel.size());
+            boolean isEof    = ( channel.position() == channel.size());
 
             assert (( bytesRead > 0 ) &&
                         (( bytesRead + remaining ) == buffer.position()) &&
                             ( buffer.position()    <= array.length ));
 
             /**
-             * Iterating through buffer, giving each thread it's own String to analyze
-             * "beginIndex" - ????????????????
-             * "endIndex"   - ????????????????
+             * Iterating through buffer, giving each thread it's own byte[] chunk to analyze:
+             *
+             * "startIndex" - byte[] index where chunk starts (inclusive)
+             * "endIndex"   - byte[] index where chunk ends (exclusive)
+             * "chunkSize"  - approximate size of byte[] chunk to be given to each thread             *
+             * "chunk"      - array[ startIndex ] - array[ endIndex - 1 ]
              */
-            int beginIndex = 0;
-            int chunkSize  = ( buffer.position() / cpuNum ); // Approximate size of byte[] chunk to be given to each thread
+            int startIndex = 0;
+            int chunkSize  = ( buffer.position() / cpuNum );
 
+           /**
+            * When chunk size is too small - we leave only a single chunk for a single thread
+            */
             if ( chunkSize < 1024 ) { chunkSize = buffer.position() }
 
-            // CHUNK SIZE MAY BE TOO SMALLLLLLLLLLLLLLLLLLLLLLLLLLLLL -------------- (remain of file, too many threads)
             for ( int endIndex = chunkSize; ( endIndex <= buffer.position()); endIndex += chunkSize )
             {
-                /**
-                 * "beginIndex" - ????????????????
-                 * "endIndex"   - ????????????????
-                 */
-
-                if ((( buffer.position() - endIndex ) < chunkSize ) && ( eof ))
+                if ((( buffer.position() - endIndex ) < chunkSize ) && ( isEof ))
                 {
                     /**
-                     * Expanding it to the end of current input - otherwise, remaining bytes will be left in buffer
-                     * and taken by no thread
+                     * We're too close to end of buffer and there will be no more file reads
+                     * (that collect bytes left from the previous read) - expanding "endIndex" to the end current buffer
                      */
                     endIndex = buffer.position();
                 }
                 else
                 {
                     /**
-                     * failed on \r\n sequence - looking where it ends
+                     * Looking for closest "end of line" bytes sequence (that may spread over multiple bytes)
+                     * so that array[ endIndex - 1 ] is an end of "end of line" bytes sequence
                      */
-                    while (( endIndex < buffer.position()) && endOfLine( array[ endIndex ] )) { endIndex++ }
 
-                    /**
-                     * didn't fail on \r\n sequence - looking for it
-                     * WHAT IF THERES NO ENOUGH LINES IN BUFFER FOR EACH THREAD?????? ---------------------------------
-                     * ???????????????????????????????????
-                     */
-                    while ( ! endOfLine( array[ endIndex - 1 ] )) { endIndex--; assert ( endIndex > 0 ) }
+                    while (( endIndex < buffer.position()) && (   endOfLine( array[ endIndex     ] ))) { endIndex++ }
+                    while (( endIndex > 0 )                && ( ! endOfLine( array[ endIndex - 1 ] ))) { endIndex-- }
                 }
 
-                assert (( endOfLine( array[ endIndex - 1 ] )) &&
-                            (( endIndex == buffer.position()) || ( ! endOfLine( array[ endIndex ] ))));
+                assert (( startIndex == 0 ) || (( startIndex > 0 ) && endOfLine( array[ startIndex - 1 ] )));
+                assert (                        ( endIndex   > 0 ) && endOfLine( array[ endIndex   - 1 ] ));
+                assert (                                    ( ! endOfLine( array[ startIndex ] )));
+                assert (( endIndex == buffer.position()) || ( ! endOfLine( array[ endIndex ]   )));
 
-                totalLines += countLines( array, beginIndex, endIndex );
-                beginIndex  = endIndex;
+                totalLines += countLines( array, startIndex, endIndex );
+                startIndex  = endIndex;
             }
 
-            buffer.position( beginIndex );  // Moving buffer's position a little back - to the last known "endIndex"
-            remaining = buffer.remaining(); // Now we know how many bytes are left unread in it
-            buffer.compact();               // Copying remaining bytes to the beginning of the buffer
+            buffer.position( startIndex );  // Moving buffer's position a little back to last known "endIndex"
+            remaining = buffer.remaining(); // How many bytes are left unread in buffer
+            buffer.compact();               // Copying remaining (unread) bytes to beginning of buffer
         }
 
-        assert ( totalBytesRead == channel.size()); // Making sure we read all file's data
+        assert ( totalBytesRead == channel.size());
         return totalLines;
     }
 
 
-    private static int countLines( byte[] array, int beginIndex, int endIndex )
+
+   /**
+    * This is where each thread gets it's own byte[] chunk to analyze:
+    * - it starts at index "startIndex"
+    * - it ends   at index "endIndex" - 1
+    * - it contains a number of complete rows (no half rows)
+    */
+    private static int countLines( byte[] array, int startIndex, int endIndex )
     {
         int linesCounter  = 0;
 
-        assert (( beginIndex >=0 ) && ( endIndex <= array.length ) && ( beginIndex < endIndex ));
+        assert (( startIndex >=0 ) &&
+                    ( endIndex <= array.length ) &&
+                        ( startIndex < endIndex ));
 
-        for ( int j = beginIndex; j < endIndex; j++ )
+        for ( int j = startIndex; j < endIndex; j++ )
         {
             if ( endOfLine( array[ j ] ))
             {
@@ -170,7 +176,7 @@ class Start
 
 
    /**
-    * Determines if byte specified is an end-of-line character (0x0D or 0x0A)
+    * Determines if byte specified is an end-of-line character
     */
     private static boolean endOfLine( byte b )
     {
