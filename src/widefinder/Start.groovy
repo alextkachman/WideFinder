@@ -51,8 +51,6 @@ class Start
                     print ( [ bufferSize, cpuNum, "" ].join( '\t' ));
                     long lines = countLines( channel, buffer, cpuNum );
                     println ([ lines, (( System.currentTimeMillis() - t ) / 1000 ) ].join( '\t' ));
-
-                    assert ( lines = 11000000L );
                 }
                 finally
                 {
