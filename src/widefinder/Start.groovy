@@ -86,7 +86,7 @@ class Start
             int chunkSize  = ( buffer.position() / cpuNum ); // Approximate size of byte[] chunk to be given to each thread
             if ( chunkSize < 1024 ) { chunkSize = buffer.position() }
 
-            // CHUNK SIZE MAY BE TOO SMALLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL ----------------- (remain of file, too many threads)
+            // CHUNK SIZE MAY BE TOO SMALLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL -------------- (remain of file, too many threads)
             for ( int endIndex = chunkSize; ( endIndex <= buffer.position()); endIndex += chunkSize )
             {
                 /**
