@@ -59,7 +59,7 @@ class Start
                 }
 
                 buffer = null;
-                for ( int j in ( 1 .. 10 )){ System.gc(); sleep( 1000 ); }
+                10.times{ System.gc(); sleep( 1000 ); }
             }
         }
     }
