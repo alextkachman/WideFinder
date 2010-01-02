@@ -4,7 +4,7 @@ package widefinder
 /**
  * Statistics class
  */
-//@Typed
+@Typed
 class Stat
 {
     final Map<String, L>              articlesToHits      = new HashMap<String, L>();
@@ -120,8 +120,8 @@ class Stat
         }
 
         // TODO
-        List<Long> sortedList = topValues.toList().sort{ long a, long b -> ( b - a ) };
-        long[]     result     = sortedList.toArray( new long[ topValues.size() ] );
+//        List<Long> sortedList = topValues.toList().sort{ long a, long b -> ( b - a ) };
+        long[]     result = topValues.toList().sort{ long a, long b -> ( b - a ) }.toArray( new long[ topValues.size() ] );
         return     result;
     }
 
