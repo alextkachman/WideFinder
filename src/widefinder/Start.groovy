@@ -57,8 +57,6 @@ class Start
             channel.close();
             fis.close();
         }
-
-        int j = 5;
     }
 
 

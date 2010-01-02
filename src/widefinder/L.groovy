@@ -23,14 +23,14 @@ class L
         this.counter++;
     }
 
-    long getCounter ()
+    long counter ()
     {
         return this.counter;
     }
-
-
+    
+    @Override
     def String toString ()
     {
-        return String.valueOf( getCounter());
+        return String.valueOf( counter());
     }
 }

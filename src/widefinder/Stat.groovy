@@ -59,7 +59,10 @@ class Stat
         getArticlesToHits( articleUri ).increment();
         getArticlesToClients( articleUri, clientAddress ).increment();
 
-        if ( referrer ) { getArticlesToReferrers( articleUri, referrer ).increment() }
+        if ( referrer )
+        {
+            getArticlesToReferrers( articleUri, referrer ).increment()
+        }
     }
 
    /**
