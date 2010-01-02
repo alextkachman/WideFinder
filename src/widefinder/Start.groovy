@@ -26,23 +26,7 @@ class Start
     /**
      * Array of booleans where only "end of line" indices are set to "true"
      */
-/*
-    private static final boolean[] BOOLEANS = {
-                                                    boolean[] b = new boolean[ 256 ];
-                                                    b[ ( int ) '\r' ] = true;
-                                                    b[ ( int ) '\n' ] = true;
-                                                    return  b;
-                                              }();
     private static final boolean[] BOOLEANS = ( 0 .. 255 ).collect{ ( it == ( int ) '\r' ) || ( it == ( int ) '\n' ) }
-*/
-    private static final boolean[] BOOLEANS = getBooleans();
-    private static       boolean[]            getBooleans()
-    {
-        boolean[] b       = new boolean[ 256 ];
-        b[ ( int ) '\r' ] = true;
-        b[ ( int ) '\n' ] = true;
-        return  b;
-    };
 
 
     public static void main ( String[] args )
@@ -50,6 +34,8 @@ class Start
         int    bufferSizeMb = 10;
         int    cpuNum       = Runtime.getRuntime().availableProcessors();
         File   file         = new File( args[ 0 ] );
+        Stat   stat         = new Stat();
+
         assert file.isFile();
 
         println ( [ "Buffer Size", "CPU #", "Lines #", "Time (sec)" ].join( '\t' ));
@@ -63,7 +49,7 @@ class Start
         try
         {
             print ( [ bufferSize, cpuNum, "" ].join( '\t' ));
-            long lines = countLines( channel, buffer, cpuNum );
+            long lines = countLines( channel, buffer, cpuNum, stat );
             println ([ lines, (( System.currentTimeMillis() - t ) / 1000 ) ].join( '\t' ));
         }
         finally
@@ -71,13 +57,15 @@ class Start
             channel.close();
             fis.close();
         }
+
+        int j = 5;
     }
 
 
    /**
     * Reads number of lines in the channel specified
     */
-    private static long countLines ( FileChannel channel, ByteBuffer buffer, int cpuNum )
+    private static long countLines ( FileChannel channel, ByteBuffer buffer, int cpuNum, Stat stat )
     {
         buffer.rewind();
 
@@ -141,7 +129,7 @@ class Start
                 assert (                                    ( ! endOfLine( array[ startIndex ] )));
                 assert (( endIndex == buffer.position()) || ( ! endOfLine( array[ endIndex ]   )));
 
-                totalLines += countLines( array, startIndex, endIndex );
+                totalLines += countLines( array, startIndex, endIndex, stat );
                 startIndex  = endIndex;
             }
 
@@ -163,7 +151,7 @@ class Start
     * - it ends   at index "endIndex" - 1
     * - it contains a number of complete rows (no half rows)
     */
-    private static int countLines( byte[] array, int startIndex, int endIndex )
+    private static int countLines( byte[] array, int startIndex, int endIndex, Stat stat )
     {
         assert (( startIndex >=0 ) &&
                     ( endIndex <= array.length ) &&
@@ -180,7 +168,7 @@ class Start
                 int length = ( index - lastStartIndex );
 
                 assert (( offset >= 0 ) && ( length > 0 ));
-                analyze( new String( array, offset, length, "UTF-8" ));
+                analyze( new String( array, offset, length, "UTF-8" ), stat );
 
                 linesCounter++;
 
@@ -202,17 +190,27 @@ class Start
     *     http://groovy.codehaus.org/Regular+Expressions
     *
     */
-    private static void analyze ( String line )
+    private static void analyze ( String line, Stat stat )
     {
         Matcher m = ( line =~ PATTERN );
         assert ( m && m[ 0 ] ), "Line [$line] doesn't match"
 
         def ( all_ignored, clientAddress, httpMethod, uri, statusCode, byteCount, referrer ) = m[ 0 ];
 
-        assert ( clientAddress && uri && statusCode && byteCount && referrer );
+        assert ( clientAddress && httpMethod && uri && statusCode && byteCount && referrer );
 
-        boolean isArticle = (( httpMethod == 'GET' ) && ( uri ==~ '^/ongoing/When/\\d{3}x/\\d{4}/\\d{2}/\\d{2}/\\S+$' ));
-//        println "[$uri][$isArticle]";
+        boolean isArticle = (( httpMethod == 'GET' ) &&
+                             ( uri ==~ '^/ongoing/When/\\d{3}x/\\d{4}/\\d{2}/\\d{2}/[^ .]+$' ));
+        if ( isArticle )
+        {
+            stat.addArticle( uri,
+                             clientAddress,
+                             (( referrer != '-' ) ? referrer : null ));
+        }
+
+        stat.addUri( uri,
+                     (( byteCount != '-' ) ? Integer.valueOf( byteCount ) : 0 ),
+                     ( statusCode == '404' ));
     }
 
 
