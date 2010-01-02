@@ -4,6 +4,7 @@ package widefinder
 /**
  * Mutable "long" wrapper
  */
+@Typed
 class L
 {
     private long counter = 0;
@@ -55,6 +56,6 @@ class L
     boolean equals ( Object obj )
     {
         return (( this.is( obj )) ||
-                (( obj instanceof L ) && ( this.counter == obj.counter )));
+                (( obj instanceof L ) && ( this.counter == (( L ) obj ).counter )));
     }
 }

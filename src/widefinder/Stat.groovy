@@ -4,6 +4,7 @@ package widefinder
 /**
  * Statistics class
  */
+//@Typed
 class Stat
 {
     final Map<String, L>              articlesToHits      = new HashMap<String, L>();
@@ -82,27 +83,88 @@ class Stat
    /**
     *
     */
-    static List<String> top ( Map<String, L> map, int n )
+    static List<String> top ( int n, Map<String, L> map )
     {
-        Map<L, Set<String>> valuesMap = new HashMap<L,Set<String>>();
+        assert (( n > 0 ) && ( map != null ));
 
-        /**
-         * Reverting a map - creating a new one, where counter is mapped to Set<String> of keys
-         */
+        Map<Long, Set<String>> valuesMap   = revertMap( map );
+        long[]                 topCounters = top( n, valuesMap.keySet().toArray( new long[ valuesMap.keySet().size() ] ));
+
+        return null;
+    }
+
+
+   /**
+    *
+    */
+    static long[] top ( int n, long[] values )
+    {
+        assert (( n > 0 ) && ( values != null ));
+
+        if ( values.size() <= n )
+        {
+            return values;
+        }
+
+        assert ( values.size() > n );
+        long[] topValues = values[ 0 ..< n ];
+        int    minIndex  = chooseMinIndex( topValues );
+
+        for ( index in ( n ..< values.size()))
+        {
+            if ( values[ index ] > topValues[ minIndex ] )
+            {
+                topValues[ minIndex ] = values[ index ];
+                minIndex = chooseMinIndex( topValues );
+            }
+        }
+
+        // TODO
+        List<Long> sortedList = topValues.toList().sort{ long a, long b -> ( b - a ) };
+        long[]     result     = sortedList.toArray( new long[ topValues.size() ] );
+        return     result;
+    }
+
+
+
+   /**
+    *
+    */
+    static int chooseMinIndex( long[] array )
+    {
+        assert ( array.size() > 0 );
+
+        int minIndex = 0;
+        int minValue = array[ 0 ];
+
+        for ( j in ( 1 ..< array.size()))
+        {
+            if ( array[ j ] < minValue )
+            {
+                minIndex = j;
+                minValue = array[ j ];
+            }
+        }
+
+        return minIndex;
+    }
+
+
+   /**
+    * Reverts a [String => Counter] map to the [Counter => Set<String>] one
+    */
+    private static Map<Long, Set<String>> revertMap ( Map<String, L> map )
+    {
+        Map<Long, Set<String>> newMap = new HashMap<Long, Set<String>>();
+
         map.each
         {
             String key, L counter ->
 
-            if ( ! valuesMap[ counter ] )
-            {
-                valuesMap[ counter ] = new HashSet<String>([ key ]);
-            }
-
-            valuesMap[ counter ] << key;
+            if ( ! newMap[ counter.counter() ] ) { newMap[ counter.counter() ] = new LinkedHashSet<String>([ key ]) }
+            newMap[ counter.counter() ] << key; // Adding new element to Set<String>
         }
 
-        long[] values = valuesMap.keySet().collect{ it.counter }
-
-        return null;
+        return newMap;
     }
 }

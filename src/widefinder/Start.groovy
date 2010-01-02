@@ -6,7 +6,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 
-//@Typed
+@Typed
 class Start
 {
     /**
@@ -24,9 +24,10 @@ class Start
 
 
     /**
-     * Array of booleans where only "end of line" indices are set to "true"
+     * Array of booleans where only "end of line" indices (10, 13) are set to "true"
      */
-    private static final boolean[] BOOLEANS = ( 0 .. 255 ).collect{ ( it == ( int ) '\r' ) || ( it == ( int ) '\n' ) }
+    private static final boolean[] BOOLEANS =
+        ( 0 .. 255 ).collect{ ( it == ( int ) '\r' ) || ( it == ( int ) '\n' ) }
 
 
     public static void main ( String[] args )
@@ -58,7 +59,9 @@ class Start
             fis.close();
         }
 
-        Stat.top( stat.getArticlesToHits(), 10 );
+        Stat.top( 10, stat.getArticlesToHits());
+        Stat.top( 10, stat.getUriToByteCounts());
+        Stat.top( 10, stat.getUriTo404());
     }
 
 
@@ -195,7 +198,16 @@ class Start
         Matcher m = ( line =~ PATTERN );
         assert ( m && m[ 0 ] ), "Line [$line] doesn't match"
 
-        def ( all_ignored, clientAddress, httpMethod, uri, statusCode, byteCount, referrer ) = m[ 0 ];
+// TODO
+        String clientAddress = m.group( 1 ); // m[ 0 ][ 1 ];
+        String httpMethod    = m.group( 2 ); // m[ 0 ][ 2 ];
+        String uri           = m.group( 3 ); // m[ 0 ][ 3 ];
+        String statusCode    = m.group( 4 ); // m[ 0 ][ 4 ];
+        String byteCount     = m.group( 5 ); // m[ 0 ][ 5 ];
+        String referrer      = m.group( 6 ); // m[ 0 ][ 6 ];
+
+// TODO
+//        def ( all_ignored, clientAddress, httpMethod, uri, statusCode, byteCount, referrer ) = m[ 0 ];
 
         assert ( clientAddress && httpMethod && uri && statusCode && byteCount && referrer );
 
