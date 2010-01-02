@@ -32,33 +32,28 @@ class Start
     public static void main ( String[] args )
     {
         int    bufferSizeMb = 10;
+        int    cpuNum       = Runtime.getRuntime().availableProcessors();
         File   file         = new File( args[ 0 ] );
         assert file.isFile();
 
         println ( [ "Buffer Size", "CPU #", "Lines #", "Time (sec)" ].join( '\t' ));
 
-        for ( int cpuNum in ( 1 .. 30 ).step( 5 ))
+        long            t          = System.currentTimeMillis();
+        int             bufferSize = Math.min( file.size(), ( bufferSizeMb * 1024 * 1024 ));
+        ByteBuffer      buffer     = ByteBuffer.allocate( bufferSize );
+        FileInputStream fis        = new FileInputStream( file );
+        FileChannel     channel    = fis.getChannel();
+
+        try
         {
-            long            t          = System.currentTimeMillis();
-            int             bufferSize = Math.min( file.size(), ( bufferSizeMb * 1024 * 1024 ));
-            ByteBuffer      buffer     = ByteBuffer.allocate( bufferSize );
-            FileInputStream fis        = new FileInputStream( file );
-            FileChannel     channel    = fis.getChannel();
-
-            try
-            {
-                print ( [ bufferSize, cpuNum, "" ].join( '\t' ));
-                long lines = countLines( channel, buffer, cpuNum );
-                println ([ lines, (( System.currentTimeMillis() - t ) / 1000 ) ].join( '\t' ));
-            }
-            finally
-            {
-                channel.close();
-                fis.close();
-            }
-
-            buffer = null;
-            10.times{ System.gc(); sleep( 1000 ); }
+            print ( [ bufferSize, cpuNum, "" ].join( '\t' ));
+            long lines = countLines( channel, buffer, cpuNum );
+            println ([ lines, (( System.currentTimeMillis() - t ) / 1000 ) ].join( '\t' ));
+        }
+        finally
+        {
+            channel.close();
+            fis.close();
         }
     }
 
@@ -158,14 +153,19 @@ class Start
                     ( endIndex <= array.length ) &&
                         ( startIndex < endIndex ));
 
-        int linesCounter = 0;
-        
-        for ( j in ( startIndex ..< endIndex ))
+        int linesCounter   = 0;
+        int lastStartIndex = 0;
+
+        for ( index in ( startIndex ..< endIndex ))
         {
-            if ( endOfLine( array[ j ] ))
+            if ( endOfLine( array[ index ] ))
             {
+                String s = new String( array, lastStartIndex, ( index - lastStartIndex ), "UTF-8" );
                 linesCounter++;
-                while(( j < endIndex ) && endOfLine( array[ j ] )){ j++ }
+
+                while(( index < endIndex ) && endOfLine( array[ index ] )){ index++ }
+                lastStartIndex = index;
+                assert ( endOfLine( array[ lastStartIndex - 1 ] ) && ( ! endOfLine( array[ lastStartIndex ] )));
             }
         }
 
