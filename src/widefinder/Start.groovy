@@ -3,6 +3,7 @@ package widefinder
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
 import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 
 //@Typed
@@ -12,7 +13,15 @@ class Start
      * Possible HTTP methods:
      * http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
      */
-    private static final String HTTP_METHODS = 'GET|POST|PUT|HEAD|OPTIONS|DELETE|TRACE|CONNECT';
+    private static final String HTTP_METHODS = 'GET|POST|HEAD|PUT|OPTIONS|DELETE|TRACE|CONNECT';
+
+
+    /**
+     * Single line pattern
+     */
+    private static final Pattern PATTERN =
+        Pattern.compile( /^(\S+).+?"(?:$HTTP_METHODS) (\S+) HTTP\/1\.(?:1|0)" (\d+) (\S+) "(.+?)"/ );
+
 
     /**
      * Array of booleans where only "end of line" indices are set to "true"
@@ -195,13 +204,13 @@ class Start
     */
     private static void analyze ( String line )
     {
-        Matcher m = ( line =~ /^(\S+).+?"(?:$HTTP_METHODS) (\S+)/ );
-
+        Matcher m = ( line =~ PATTERN );
         assert ( m && m[ 0 ] ), "Line [$line] doesn't match"
-        def ( all_ignored, clientAddress, uri ) = m[ 0 ];
+        
+        def ( all_ignored, clientAddress, uri, statusCode, byteCount, referrer ) = m[ 0 ];
 
-        assert ( clientAddress && uri );
-//        println "[$line][$clientAddress][$uri]";
+        assert ( clientAddress && uri && statusCode && byteCount && referrer );
+//        println "[$line][$clientAddress][$uri][$statusCode][$byteCount][$referrer]";
     }
 
 
