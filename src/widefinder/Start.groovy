@@ -20,7 +20,7 @@ class Start
      * Single line pattern
      */
     private static final Pattern PATTERN =
-        Pattern.compile( /^(\S+).+?"(?:$HTTP_METHODS) (\S+) HTTP\/1\.(?:1|0)" (\d+) (\S+) "(.+?)"/ );
+        Pattern.compile( /^(\S+).+?"($HTTP_METHODS) (\S+) HTTP\/1\.(?:1|0)" (\d+) (\S+) "(.+?)"/ );
 
 
     /**
@@ -206,11 +206,13 @@ class Start
     {
         Matcher m = ( line =~ PATTERN );
         assert ( m && m[ 0 ] ), "Line [$line] doesn't match"
-        
-        def ( all_ignored, clientAddress, uri, statusCode, byteCount, referrer ) = m[ 0 ];
+
+        def ( all_ignored, clientAddress, httpMethod, uri, statusCode, byteCount, referrer ) = m[ 0 ];
 
         assert ( clientAddress && uri && statusCode && byteCount && referrer );
-//        println "[$line][$clientAddress][$uri][$statusCode][$byteCount][$referrer]";
+
+        boolean isArticle = (( httpMethod == 'GET' ) && ( uri ==~ '^/ongoing/When/\\d{3}x/\\d{4}/\\d{2}/\\d{2}/\\S+$' ));
+//        println "[$uri][$isArticle]";
     }
 
 
