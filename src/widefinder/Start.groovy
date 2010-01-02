@@ -79,8 +79,8 @@ class Start
         for ( int remaining = 0; ( channel.position() < channel.size()); )
         {
             int    bytesRead = channel.read( buffer );
-            byte[] array     = buffer.array();
             totalBytesRead  += bytesRead;
+            byte[] array     = buffer.array();
             boolean isEof    = ( channel.position() == channel.size());
 
             assert (( bytesRead > 0 ) &&
@@ -109,7 +109,8 @@ class Start
                 {
                     /**
                      * We're too close to end of buffer and there will be no more file reads
-                     * (that collect bytes left from the previous read) - expanding "endIndex" to the end current buffer
+                     * (that usually collect bytes left from the previous read) - expanding
+                     * "endIndex" to the end current buffer
                      */
                     endIndex = buffer.position();
                 }
@@ -117,7 +118,7 @@ class Start
                 {
                     /**
                      * Looking for closest "end of line" bytes sequence (that may spread over multiple bytes)
-                     * so that array[ endIndex - 1 ] is an end of "end of line" bytes sequence
+                     * so that array[ endIndex - 1 ] is an *end* of "end of line" bytes sequence
                      */
 
                     while (( endIndex < buffer.position()) && (   endOfLine( array[ endIndex     ] ))) { endIndex++ }
@@ -136,6 +137,7 @@ class Start
             buffer.position( startIndex );  // Moving buffer's position a little back to last known "endIndex"
             remaining = buffer.remaining(); // How many bytes are left unread in buffer
             buffer.compact();               // Copying remaining (unread) bytes to beginning of buffer
+                                            // Next file read will be added to them
         }
 
         assert ( totalBytesRead == channel.size());
