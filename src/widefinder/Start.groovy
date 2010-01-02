@@ -31,36 +31,34 @@ class Start
 
     public static void main ( String[] args )
     {
-        File   file = new File( args[ 0 ] );
+        int    bufferSizeMb = 10;
+        File   file         = new File( args[ 0 ] );
         assert file.isFile();
 
         println ( [ "Buffer Size", "CPU #", "Lines #", "Time (sec)" ].join( '\t' ));
 
         for ( int cpuNum in ( 1 .. 30 ).step( 5 ))
         {
-            for ( int bufferSizeMb in ( 10 .. 80 ).step( 10 ))
+            long            t          = System.currentTimeMillis();
+            int             bufferSize = Math.min( file.size(), ( bufferSizeMb * 1024 * 1024 ));
+            ByteBuffer      buffer     = ByteBuffer.allocate( bufferSize );
+            FileInputStream fis        = new FileInputStream( file );
+            FileChannel     channel    = fis.getChannel();
+
+            try
             {
-                long            t          = System.currentTimeMillis();
-                int             bufferSize = Math.min( file.size(), ( bufferSizeMb * 1024 * 1024 ));
-                ByteBuffer      buffer     = ByteBuffer.allocate( bufferSize );
-                FileInputStream fis        = new FileInputStream( file );
-                FileChannel     channel    = fis.getChannel();
-
-                try
-                {
-                    print ( [ bufferSize, cpuNum, "" ].join( '\t' ));
-                    long lines = countLines( channel, buffer, cpuNum );
-                    println ([ lines, (( System.currentTimeMillis() - t ) / 1000 ) ].join( '\t' ));
-                }
-                finally
-                {
-                    channel.close();
-                    fis.close();
-                }
-
-                buffer = null;
-                10.times{ System.gc(); sleep( 1000 ); }
+                print ( [ bufferSize, cpuNum, "" ].join( '\t' ));
+                long lines = countLines( channel, buffer, cpuNum );
+                println ([ lines, (( System.currentTimeMillis() - t ) / 1000 ) ].join( '\t' ));
             }
+            finally
+            {
+                channel.close();
+                fis.close();
+            }
+
+            buffer = null;
+            10.times{ System.gc(); sleep( 1000 ); }
         }
     }
 
