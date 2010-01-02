@@ -160,7 +160,7 @@ class Start
                     ( endIndex <= array.length ) &&
                         ( startIndex < endIndex ));
 
-        for ( int j = startIndex; j < endIndex; j++ )
+        for ( j in ( startIndex ..< endIndex ))
         {
             if ( endOfLine( array[ j ] ))
             {
