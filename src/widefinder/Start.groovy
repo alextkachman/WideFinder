@@ -154,12 +154,12 @@ class Start
     */
     private static int countLines( byte[] array, int startIndex, int endIndex )
     {
-        int linesCounter  = 0;
-
         assert (( startIndex >=0 ) &&
                     ( endIndex <= array.length ) &&
                         ( startIndex < endIndex ));
 
+        int linesCounter = 0;
+        
         for ( j in ( startIndex ..< endIndex ))
         {
             if ( endOfLine( array[ j ] ))
