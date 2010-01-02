@@ -57,6 +57,8 @@ class Start
             channel.close();
             fis.close();
         }
+
+        Stat.top( stat.getArticlesToHits(), 10 );
     }
 
 

@@ -6,11 +6,11 @@ package widefinder
  */
 class Stat
 {
-    private final Map<String, L>              articlesToHits      = new HashMap<String, L>();
-    private final Map<String, L>              uriToByteCounts     = new HashMap<String, L>();
-    private final Map<String, L>              uriTo404            = new HashMap<String, L>();
-    private final Map<String, Map<String, L>> articlesToClients   = new HashMap<String, Map<String, L>>();
-    private final Map<String, Map<String, L>> articlesToReferrers = new HashMap<String, Map<String, L>>();
+    final Map<String, L>              articlesToHits      = new HashMap<String, L>();
+    final Map<String, L>              uriToByteCounts     = new HashMap<String, L>();
+    final Map<String, L>              uriTo404            = new HashMap<String, L>();
+    final Map<String, Map<String, L>> articlesToClients   = new HashMap<String, Map<String, L>>();
+    final Map<String, Map<String, L>> articlesToReferrers = new HashMap<String, Map<String, L>>();
 
     Stat ()
     {
@@ -21,8 +21,8 @@ class Stat
     {
         assert( key && ( map != null ));
 
-        if ( ! map.containsKey( key )) { map.put( key, new L()) }
-        L      counter = map.get( key )
+        if ( ! map[ key ] ) { map[ key ] = new L() }
+        L      counter = map[ key ];
         assert counter;
         return counter;
     }
@@ -32,9 +32,9 @@ class Stat
     {
         assert( key && secondKey && ( map != null ));
 
-        if ( ! map.containsKey( key )) { map.put( key, new HashMap<String, L>()) }
+        if ( ! map[ key ] ) { map[ key ] = new HashMap<String, L>() }
 
-        Map<String, L> secondMap = map.get( key );
+        Map<String, L> secondMap = map[ key ];
         assert       ( secondMap != null );
 
         return get( secondKey, secondMap );
@@ -49,9 +49,9 @@ class Stat
 
 
 
-   /**
-    *
-    */
+    /**
+     *
+     */
     void addArticle( String articleUri, String clientAddress, String referrer )
     {
         assert( articleUri && clientAddress );
@@ -65,7 +65,8 @@ class Stat
         }
     }
 
-   /**
+
+    /**
      *
      */
      void addUri( String uri, int bytes, boolean is404 )
@@ -74,5 +75,34 @@ class Stat
 
         if ( bytes > 0 ) { getUriToByteCounts( uri ).add( bytes ) }
         if ( is404     ) { getUriTo404( uri ).increment()         }
+    }
+
+
+
+   /**
+    *
+    */
+    static List<String> top ( Map<String, L> map, int n )
+    {
+        Map<L, Set<String>> valuesMap = new HashMap<L,Set<String>>();
+
+        /**
+         * Reverting a map - creating a new one, where counter is mapped to Set<String> of keys
+         */
+        map.each
+        {
+            String key, L counter ->
+
+            if ( ! valuesMap[ counter ] )
+            {
+                valuesMap[ counter ] = new HashSet<String>([ key ]);
+            }
+
+            valuesMap[ counter ] << key;
+        }
+
+        long[] values = valuesMap.keySet().collect{ it.counter }
+
+        return null;
     }
 }
