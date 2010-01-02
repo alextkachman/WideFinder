@@ -2,11 +2,18 @@ package widefinder
 
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
+import java.util.regex.Matcher
 
 
-@Typed
+//@Typed
 class Start
 {
+    /**
+     * Possible HTTP methods:
+     * http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
+     */
+    private static final String HTTP_METHODS = 'GET|POST|PUT|HEAD|OPTIONS|DELETE|TRACE|CONNECT';
+
     /**
      * Array of booleans where only "end of line" indices are set to "true"
      */
@@ -156,20 +163,45 @@ class Start
         int linesCounter   = 0;
         int lastStartIndex = 0;
 
-        for ( index in ( startIndex ..< endIndex ))
+        for ( int index = startIndex; index < endIndex; index++ ) // "index" is incremented manually - Range doesn't fit here
         {
             if ( endOfLine( array[ index ] ))
             {
-                String s = new String( array, lastStartIndex, ( index - lastStartIndex ), "UTF-8" );
+                int offset = lastStartIndex;
+                int length = ( index - lastStartIndex );
+
+                assert (( offset >= 0 ) && ( length > 0 ));
+                analyze( new String( array, offset, length, "UTF-8" ));
+
                 linesCounter++;
 
-                while(( index < endIndex ) && endOfLine( array[ index ] )){ index++ }
+                while(( index < endIndex ) && endOfLine( array[ index ] )){ index++ } // Skipping "end of line" sequence
+                assert ( endOfLine( array[ index - 1 ] ) && (( index == endIndex ) || ( ! endOfLine( array[ index ] ))));
+
                 lastStartIndex = index;
-                assert ( endOfLine( array[ lastStartIndex - 1 ] ) && ( ! endOfLine( array[ lastStartIndex ] )));
             }
         }
 
         return linesCounter;
+    }
+
+
+
+   /**
+    * Analyzes the String specified according to benchmark needs
+    * See http://wikis.sun.com/display/WideFinder/The+Benchmark
+    *     http://groovy.codehaus.org/Regular+Expressions
+    *
+    */
+    private static void analyze ( String line )
+    {
+        Matcher m = ( line =~ /^(\S+).+?"(?:$HTTP_METHODS) (\S+)/ );
+
+        assert ( m && m[ 0 ] ), "Line [$line] doesn't match"
+        def ( all_ignored, clientAddress, uri ) = m[ 0 ];
+
+        assert ( clientAddress && uri );
+//        println "[$line][$clientAddress][$uri]";
     }
 
 
