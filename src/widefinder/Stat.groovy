@@ -4,7 +4,7 @@ package widefinder
 /**
  * Statistics class
  */
-//@Typed
+@Typed
 class Stat
 {
     final Map<String, L>              articlesToHits      = new HashMap<String, L>();
@@ -108,14 +108,14 @@ class Stat
 
         assert ( values.size() > n );
         long[] topValues = values[ 0 ..< n ];
-        int    minIndex  = chooseMinIndex( topValues );
+        int    minIndex  = minIndex( topValues );
 
         for ( index in ( n ..< values.size()))
         {
             if ( values[ index ] > topValues[ minIndex ] )
             {
                 topValues[ minIndex ] = values[ index ];
-                minIndex = chooseMinIndex( topValues );
+                minIndex = minIndex( topValues );
             }
         }
 
@@ -130,7 +130,7 @@ class Stat
    /**
     *
     */
-    static int chooseMinIndex( long[] array )
+    static int minIndex( long[] array )
     {
         assert ( array.size() > 0 );
 
