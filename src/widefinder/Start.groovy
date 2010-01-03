@@ -199,12 +199,12 @@ class Start
         assert ( m && m[ 0 ] ), "Line [$line] doesn't match"
 
 // TODO
-        String clientAddress = m[ 0 ][ 1 ];
-        String httpMethod    = m[ 0 ][ 2 ];
-        String uri           = m[ 0 ][ 3 ];
-        String statusCode    = m[ 0 ][ 4 ];
-        String byteCount     = m[ 0 ][ 5 ];
-        String referrer      = m[ 0 ][ 6 ];
+        String clientAddress = m.group( 1 ); // m[ 0 ][ 1 ];
+        String httpMethod    = m.group( 2 ); // m[ 0 ][ 2 ];
+        String uri           = m.group( 3 ); // m[ 0 ][ 3 ];
+        String statusCode    = m.group( 4 ); // m[ 0 ][ 4 ];
+        String byteCount     = m.group( 5 ); // m[ 0 ][ 5 ];
+        String referrer      = m.group( 6 ); // m[ 0 ][ 6 ];
 
 // TODO
 //        def ( all_ignored, clientAddress, httpMethod, uri, statusCode, byteCount, referrer ) = m[ 0 ];
