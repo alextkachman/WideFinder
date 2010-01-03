@@ -95,7 +95,14 @@ class Stat
 
 
    /**
+    * Creates a "top counters Map":
+    * - Key (Long)                 - top N counter found in the map specified.
+    * - Value (Collection<String>) - original map's keys that were mapped to that key (counter).
+    *                                No more than N Strings are kept in Collection:
+    *                                if there are more - they're discarded.
     *
+    * "Top N counter" means that a counter is in "top N" elements if all original counters
+    * (values of the map specified) were sorted but we <b>use no sorting here</b> as it's not needed.
     */
     private static Map<Long, Collection<String>> topCountersMap ( int n, Map<String, L> map )
     {
