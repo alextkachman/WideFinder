@@ -108,14 +108,14 @@ class Stat
 
         assert ( values.size() > n );
         long[] topValues = values[ 0 ..< n ];
-        int    minIndex  = minIndex( topValues );
+        int    minIndex  = chooseMinIndex( topValues );
 
         for ( index in ( n ..< values.size()))
         {
             if ( values[ index ] > topValues[ minIndex ] )
             {
                 topValues[ minIndex ] = values[ index ];
-                minIndex = minIndex( topValues );
+                minIndex = chooseMinIndex( topValues );
             }
         }
 
@@ -130,7 +130,7 @@ class Stat
    /**
     *
     */
-    static int minIndex( long[] array )
+    static int chooseMinIndex( long[] array )
     {
         assert ( array.size() > 0 );
 
