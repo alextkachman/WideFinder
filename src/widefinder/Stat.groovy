@@ -4,7 +4,7 @@ package widefinder
 /**
  * Statistics class
  */
-@Typed
+//@Typed
 class Stat
 {
     final Map<String, L>              articlesToHits      = new HashMap<String, L>();

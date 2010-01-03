@@ -6,7 +6,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 
-@Typed
+//@Typed
 class Start
 {
     /**
@@ -59,6 +59,7 @@ class Start
             fis.close();
         }
 
+        // TODO
         Stat.top( 10, stat.getArticlesToHits());
         Stat.top( 10, stat.getUriToByteCounts());
         Stat.top( 10, stat.getUriTo404());
