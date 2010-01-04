@@ -59,9 +59,15 @@ class Start
             fis.close();
         }
 
-        Stat.top( 10, stat.getArticlesToHits());
-        Stat.top( 10, stat.getUriToByteCounts());
-        Stat.top( 10, stat.getUriTo404());
+        report( 'Top 10 articles (by hits)',      Stat.top( 10, stat.getArticlesToHits()));
+        report( 'Top 10 URIs (by bytes count)',   Stat.top( 10, stat.getUriToByteCounts()));
+        report( 'Top 10 URIs (by 404 responses)', Stat.top( 10, stat.getUriTo404()));
+    }
+
+
+    private static void report( String title, Collection<String> result )
+    {
+        println "$title: \n* ${ result.join( "\n* " ) }"
     }
 
 

@@ -81,14 +81,28 @@ class Stat
 
 
    /**
-    *
+    * Retrieves values corresponding to the "top N" counters in the Map specified.
     */
     static List<String> top ( int n, Map<String, L> map )
     {
         assert (( n > 0 ) && ( map != null ));
 
+        List<String> result = new ArrayList<String>( n );
+
         Map<Long, Collection<String>> topCountersMap = topCountersMap( n, map );
-        return null;
+        topCountersMap.keySet().sort{ long a, long b -> ( b - a ) }.each
+        {
+            long counter ->
+
+            topCountersMap[ counter ].each
+            {
+                String s ->
+
+                if ( result.size() < n ) { result << s }
+            }
+        }
+
+        return result;
     }
 
 
