@@ -4,7 +4,7 @@ package widefinder
 /**
  * Statistics class
  */
-@Typed
+//@Typed
 class Stat
 {
     final Map<String, L>              articlesToHits      = new HashMap<String, L>();
@@ -126,6 +126,7 @@ class Stat
             if (( topCountersMap.size() < n ) && ( ! topCountersMap[ counter ] ))
             {
                 topCountersMap[ counter ] = new ArrayList<String>( n );
+                minValue                  = counter;
                 topCountersMap.keySet().each{ minValue = (( it < minValue ) ? it : minValue ) }
             }
 

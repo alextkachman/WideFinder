@@ -6,7 +6,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 
-@Typed
+//@Typed
 class Start
 {
     /**
@@ -200,7 +200,7 @@ class Start
 
 // TODO
 // http://code.google.com/p/groovypptest/issues/detail?id=30
-        
+
         String clientAddress = m.group( 1 ); // m[ 0 ][ 1 ];
         String httpMethod    = m.group( 2 ); // m[ 0 ][ 2 ];
         String uri           = m.group( 3 ); // m[ 0 ][ 3 ];
