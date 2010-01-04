@@ -4,7 +4,7 @@ package widefinder
 /**
  * Mutable "long" wrapper
  */
-//@Typed
+@Typed
 class L
 {
     private long counter = 0;

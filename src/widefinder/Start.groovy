@@ -6,7 +6,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 
-//@Typed
+@Typed
 class Start
 {
     /**
@@ -59,7 +59,6 @@ class Start
             fis.close();
         }
 
-        // TODO
         Stat.top( 10, stat.getArticlesToHits());
         Stat.top( 10, stat.getUriToByteCounts());
         Stat.top( 10, stat.getUriTo404());
@@ -200,6 +199,8 @@ class Start
         assert ( m && m[ 0 ] ), "Line [$line] doesn't match"
 
 // TODO
+// http://code.google.com/p/groovypptest/issues/detail?id=30
+        
         String clientAddress = m.group( 1 ); // m[ 0 ][ 1 ];
         String httpMethod    = m.group( 2 ); // m[ 0 ][ 2 ];
         String uri           = m.group( 3 ); // m[ 0 ][ 3 ];
@@ -208,6 +209,7 @@ class Start
         String referrer      = m.group( 6 ); // m[ 0 ][ 6 ];
 
 // TODO
+// http://code.google.com/p/groovypptest/issues/detail?id=25
 //        def ( all_ignored, clientAddress, httpMethod, uri, statusCode, byteCount, referrer ) = m[ 0 ];
 
         assert ( clientAddress && httpMethod && uri && statusCode && byteCount && referrer );
