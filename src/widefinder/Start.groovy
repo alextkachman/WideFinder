@@ -65,9 +65,9 @@ class Start
     }
 
 
-    private static void report( String title, Collection<String> result )
+    private static void report( String title, Map<String, Long> map )
     {
-        println "$title: \n* ${ result.join( "\n* " ) }"
+        println "$title: \n* ${ map.entrySet().collect{ "${ it.key } : ${ it.value }" }.join( "\n* " ) }"
     }
 
 

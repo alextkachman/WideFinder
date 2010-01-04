@@ -83,12 +83,11 @@ class Stat
    /**
     * Retrieves values corresponding to the "top N" counters in the Map specified.
     */
-    static List<String> top ( int n, Map<String, L> map )
+    static Map<String, Long> top ( int n, Map<String, L> map )
     {
         assert (( n > 0 ) && ( map != null ));
 
-        List<String> result = new ArrayList<String>( n );
-
+        Map<String, Long>             result         = new LinkedHashMap<String, Long>( n );
         Map<Long, Collection<String>> topCountersMap = topCountersMap( n, map );
         topCountersMap.keySet().sort{ long a, long b -> ( b - a ) }.each
         {
@@ -98,7 +97,8 @@ class Stat
             {
                 String s ->
 
-                if ( result.size() < n ) { result << s }
+                if ( result.size()  < n ) { result.put( s, counter ) }
+                if ( result.size() == n ) return result;
             }
         }
 
@@ -150,7 +150,7 @@ class Stat
             }
         }
 
-        assert ( topCountersMap.size() == n );
+        assert ( topCountersMap.size() <= n );
         return   topCountersMap;
     }
 }
