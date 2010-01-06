@@ -1,14 +1,10 @@
 package demo
 
 
-
+@Typed
 class B
 {
-    def Map<String, Long> map = new HashMap<String, Long>();
+    final Map<String, Long> someMap = new HashMap<String, Long>();
 
-
-    static Map<String, Long> top ( int n, Map<String, Long> map )
-    {
-        return null;
-    }
+    Long getSomeMap ( String s )  { return null }
 }
