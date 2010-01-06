@@ -1,7 +1,7 @@
 package demo
 
 
-//@Typed
+@Typed
 class A
 {
 
