@@ -4,5 +4,5 @@ package demo
 @Typed
 class B
 {
-    final Map<String, Long> someMap = new HashMap<String, Long>();
+    def Map someMap = new HashMap<String, Long>();
 }

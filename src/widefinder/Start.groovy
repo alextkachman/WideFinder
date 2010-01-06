@@ -59,15 +59,17 @@ class Start
             fis.close();
         }
 
-        report( 'Top 10 articles (by hits)',      Stat.top( 10, stat.getArticlesToHits()));
-        report( 'Top 10 URIs (by bytes count)',   Stat.top( 10, stat.getUriToByteCounts()));
-        report( 'Top 10 URIs (by 404 responses)', Stat.top( 10, stat.getUriTo404()));
+// TODO
+//        report( 'Top 10 articles (by hits)',      Stat.top( 10, stat.getArticlesToHits()));
+//        report( 'Top 10 URIs (by bytes count)',   Stat.top( 10, stat.getUriToByteCounts()));
+//        report( 'Top 10 URIs (by 404 responses)', Stat.top( 10, stat.getUriTo404()));
     }
 
 
-    private static void report( String title, Map<String, Long> map )
+    static void report( String title, Map<String, Long> map )
     {
-        println "$title: \n* ${ map.entrySet().collect{ "${ it.key } : ${ it.value }" }.join( "\n* " ) }"
+// TODO
+//        println "$title: \n* ${ map.entrySet().collect{ "${ it.key } : ${ it.value }" }.join( "\n* " ) }"
     }
 
 

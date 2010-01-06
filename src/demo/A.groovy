@@ -17,7 +17,7 @@ class A
 
     public static void main( String ... args )
     {
-        top( 10, new B().getSomeMap());
+//        top( 10, new B().getSomeMap());
     }
 
 }
