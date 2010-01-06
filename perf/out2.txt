@@ -1,0 +1,38 @@
+E:\Projects\groovy-booster>j widefinder.Start data-big/O.Big.log
+
+E:\Projects\groovy-booster>d:\Winny\Java\jdk1.6.0_17\bin\java.exe -server -Xmx1024m -cp d:\Winny\Java\groovy-booster/lib/*;out widefinder.Start data-big/O.Big.log
+Buffer Size     CPU #   Lines # Time (sec)
+10485760        2       11000000        1889.132
+Top 10 articles (by hits):
+* /ongoing/When/200x/2007/06/17/Web3S : 86682
+* /ongoing/When/200x/2007/06/17/Tokyo-Playing : 38170
+* /ongoing/When/200x/2003/09/18/NXML : 27060
+* /ongoing/When/200x/2007/06/16/X-Me-is-a-Facebook-Virus : 20020
+* /ongoing/When/200x/2007/06/17/Fathers-Day : 16502
+* /ongoing/When/200x/2007/06/16/Tokyo-Phone : 11881
+* /ongoing/When/200x/2007/06/15/Cameras : 11769
+* /ongoing/When/200x/2004/02/20/GenxStatus : 9680
+* /ongoing/When/200x/2007/06/14/RFC4287 : 8800
+* /ongoing/When/200x/2006/03/30/Teacup : 7921
+Top 10 URIs (by bytes count):
+* /ongoing/When/200x/2007/06/17/IMGP5714.png : 45547320930
+* /ongoing/When/200x/2007/06/15/IMGP5923.png : 19206373610
+* /ongoing/When/200x/2007/06/17/IMGP5709.png : 52342615592
+* /ongoing/When/200x/2007/06/16/IMGP5678.png : 13610460895
+* /ongoing/ongoing.atom : 98562983749
+* /ongoing/When/200x/2007/06/17/IMGP5705.png : 68409879560
+* /ongoing/potd.png : 16615765004
+* /ongoing/When/200x/2007/06/17/IMGP5702.png : 89148763938
+* /ongoing/When/200x/2006/03/30/IMG_4613.png : 11731126732
+* /ongoing/When/200x/2007/06/15/IMGP5832.png : 9946799771
+Top 10 URIs (by 404 responses):
+* /ongoing/IMGP5702.png : 11989
+* /ongoing/IMGP5705.png : 11880
+* /ongoing/IMGP5678.png : 11550
+* /ongoing/IMGP5923.png : 11548
+* /ongoing/IMGP5832.png : 11439
+* /ongoing/IMGP5709.png : 11221
+* /ongoing/IMGP5714.png : 11220
+* /ongoing/IMGP5731.png : 9350
+* /ongoing/IMGP5786.png : 9350
+* /ongoing/IMGP5655.png : 9350
