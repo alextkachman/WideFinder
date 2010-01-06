@@ -1,7 +1,7 @@
 package demo
 
 
-@Typed
+//@Typed
 class A
 {
 
@@ -10,6 +10,7 @@ class A
     */
     static Map<String, Long> top ( int n, Map<String, Long> map )
     {
+        println "Here: [$map]";
         return null;
     }
 
