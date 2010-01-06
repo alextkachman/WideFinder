@@ -5,15 +5,18 @@ package demo
 class A
 {
 
-    public static void main( String ... args )
+   /**
+    * Retrieves values corresponding to the "top N" counters in the Map specified.
+    */
+    static Map<String, Long> top ( int n, Map<String, Long> map )
     {
-        B b = new B();
-        report( 'aaaa', B.top( 10, b.getMap()));
+        return null;
     }
 
 
-    static void report( String title, Map<String, Long> map )
+    public static void main( String ... args )
     {
+        top( 10, new B().getSomeMap());
     }
 
 }
