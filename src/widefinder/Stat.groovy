@@ -19,11 +19,11 @@ class Stat
 
 
     // TODO
-    Map<String, L>              getArticlesToHits()      { return this.articlesToHits      }
-    Map<String, L>              getUriToByteCounts()     { return this.uriToByteCounts     }
-    Map<String, L>              getUriTo404()            { return this.uriTo404            }
-    Map<String, Map<String, L>> getArticlesToClients()   { return this.articlesToClients   }
-    Map<String, Map<String, L>> getArticlesToReferrers() { return this.articlesToReferrers }
+    Map<String, L>              articlesToHits()      { return this.articlesToHits      }
+    Map<String, L>              uriToByteCounts()     { return this.uriToByteCounts     }
+    Map<String, L>              uriTo404()            { return this.uriTo404            }
+    Map<String, Map<String, L>> articlesToClients()   { return this.articlesToClients   }
+    Map<String, Map<String, L>> articlesToReferrers() { return this.articlesToReferrers }
 
 
 
