@@ -59,6 +59,3 @@ class L
                 (( obj instanceof L ) && ( this.counter == (( L ) obj ).counter )));
     }
 }
-
-
-// aaaaaaa
