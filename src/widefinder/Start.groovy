@@ -65,13 +65,13 @@ class Start
             fis.close();
         }
 
-        Map<String, Long> topArticles = Stat.top( N, stat.articlesToHits());
+        Map<String, Long> topArticles = Stat.top( N, stat.getArticlesToHits());
 
         report( "Top $N articles (by hits)",          topArticles );
-        report( "Top $N URIs (by bytes count)",       Stat.top( N, stat.uriToByteCounts()));
-        report( "Top $N URIs (by 404 responses)",     Stat.top( N, stat.uriTo404()));
-        report( "Top $N clients (by hot articles)",   Stat.top( N, topArticles, stat.articlesToClients()));
-        report( "Top $N referrers (by hot articles)", Stat.top( N, topArticles, stat.articlesToReferrers()));
+        report( "Top $N URIs (by bytes count)",       Stat.top( N, stat.getUriToByteCounts()));
+        report( "Top $N URIs (by 404 responses)",     Stat.top( N, stat.getUriTo404()));
+        report( "Top $N clients (by hot articles)",   Stat.top( N, topArticles, stat.getArticlesToClients()));
+        report( "Top $N referrers (by hot articles)", Stat.top( N, topArticles, stat.getArticlesToReferrers()));
     }
 
 
