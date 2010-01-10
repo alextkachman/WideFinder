@@ -7,18 +7,27 @@ package widefinder
 @Typed
 class Stat
 {
-    final Map<String, L>              articlesToHits      = new HashMap<String, L>();
-    final Map<String, L>              uriToByteCounts     = new HashMap<String, L>();
-    final Map<String, L>              uriTo404            = new HashMap<String, L>();
-    final Map<String, Map<String, L>> articlesToClients   = new HashMap<String, Map<String, L>>();
-    final Map<String, Map<String, L>> articlesToReferrers = new HashMap<String, Map<String, L>>();
+    private final Map<String, L>              articlesToHits      = new HashMap<String, L>();
+    private final Map<String, L>              uriToByteCounts     = new HashMap<String, L>();
+    private final Map<String, L>              uriTo404            = new HashMap<String, L>();
+    private final Map<String, Map<String, L>> articlesToClients   = new HashMap<String, Map<String, L>>();
+    private final Map<String, Map<String, L>> articlesToReferrers = new HashMap<String, Map<String, L>>();
 
     Stat ()
     {
     }
 
 
-    private static L get( String key, Map<String, L> map )
+    // TODO
+    Map<String, L>              articlesToHits()      { return this.articlesToHits      }
+    Map<String, L>              uriToByteCounts()     { return this.uriToByteCounts     }
+    Map<String, L>              uriTo404()            { return this.uriTo404            }
+    Map<String, Map<String, L>> articlesToClients()   { return this.articlesToClients   }
+    Map<String, Map<String, L>> articlesToReferrers() { return this.articlesToReferrers }
+
+
+
+    private static L get( Map<String, L> map, String key )
     {
         assert( key && ( map != null ));
 
@@ -29,7 +38,7 @@ class Stat
     }
 
 
-    private static L get( String key, Map<String, Map<String, L>> map, String secondKey )
+    private static L get( Map<String, Map<String, L>> map, String key, String secondKey )
     {
         assert( key && secondKey && ( map != null ));
 
@@ -38,15 +47,15 @@ class Stat
         Map<String, L> secondMap = map[ key ];
         assert       ( secondMap != null );
 
-        return get( secondKey, secondMap );
+        return get( secondMap, secondKey );
     }
 
 
-    L getArticlesToHits      ( String articleUri )                       { get( articleUri, this.articlesToHits  ) }
-    L getUriToByteCounts     ( String uri        )                       { get( uri,        this.uriToByteCounts ) }
-    L getUriTo404            ( String uri        )                       { get( uri,        this.uriTo404        ) }
-    L getArticlesToClients   ( String articleUri, String clientAddress ) { get( articleUri, this.articlesToClients,   clientAddress ) }
-    L getArticlesToReferrers ( String articleUri, String referrer      ) { get( articleUri, this.articlesToReferrers, referrer      ) }
+    L articlesToHitsCounter      ( String articleUri )                       { get( this.articlesToHits,  articleUri  ) }
+    L uriToByteCountsCounter     ( String uri        )                       { get( this.uriToByteCounts, uri         ) }
+    L uriTo404Counter            ( String uri        )                       { get( this.uriTo404,        uri         ) }
+    L clientsToArticlesCounter   ( String articleUri, String clientAddress ) { get( this.articlesToClients,   articleUri, clientAddress ) }
+    L referrersToArticlesCounter ( String articleUri, String referrer      ) { get( this.articlesToReferrers, articleUri, referrer      ) }
 
 
 
@@ -57,12 +66,12 @@ class Stat
     {
         assert( articleUri && clientAddress );
 
-        getArticlesToHits( articleUri ).increment();
-        getArticlesToClients( articleUri, clientAddress ).increment();
+        articlesToHitsCounter( articleUri ).increment();
+        clientsToArticlesCounter( articleUri, clientAddress ).increment();
 
         if ( referrer )
         {
-            getArticlesToReferrers( articleUri, referrer ).increment()
+            referrersToArticlesCounter( articleUri, referrer ).increment()
         }
     }
 
@@ -74,79 +83,111 @@ class Stat
     {
         assert( uri );
 
-        if ( bytes > 0 ) { getUriToByteCounts( uri ).add( bytes ) }
-        if ( is404     ) { getUriTo404( uri ).increment()         }
+        if ( bytes > 0 ) { uriToByteCountsCounter( uri ).add( bytes ) }
+        if ( is404     ) { uriTo404Counter( uri ).increment()         }
     }
 
+
+
+   /**
+    *
+    */
+    static Map<String, Long> top ( int n, Map<String, Long> topArticles, Map<String, Map<String, L>> countersMap )
+    {
+        assert ( topArticles.size() <= n );
+
+        /**
+         * Collection of maps (key => counter) corresponding to top articles
+         */
+        List<Map<String, L>> maps = new ArrayList<Map<String,L>>( n );
+
+        topArticles.keySet().each
+        {
+            String topArticle ->
+
+            if ( countersMap[ topArticle ] ) { maps << countersMap[ topArticle ] }
+        }
+
+        return top( n, maps.toArray( new Map<String, L>[ maps.size() ] ));
+    }
 
 
    /**
     * Retrieves values corresponding to the "top N" counters in the Map specified.
     */
-    static Map<String, Long> top ( int n, Map<String, L> map )
+    static Map<String, Long> top ( int n, Map<String, L> ... maps )
     {
-        assert (( n > 0 ) && ( map != null ));
+        assert (( n > 0 ) && ( maps != null ));
 
-        Map<String, Long>             result         = new LinkedHashMap<String, Long>( n );
-        Map<Long, Collection<String>> topCountersMap = topCountersMap( n, map );
+        Map<String, Long>             resultMap      = new LinkedHashMap<String, Long>( n );
+        Map<Long, Collection<String>> topCountersMap = topCountersMap( n, maps );
+
+       /**
+        * Iterating over all counters sorted in decreasing order (from top to bottom)
+        * and filling the result map (no more than n entries)
+        */
         topCountersMap.keySet().sort{ long a, long b -> ( b - a ) }.each
         {
-            long counter ->
+            long topCounter ->
 
-            topCountersMap[ counter ].each
+            /**
+             * Iterating over each String corresponding to "top counter"
+             */
+            topCountersMap[ topCounter ].each
             {
-                String s ->
-
-                if ( result.size()  < n ) { result.put( s, counter ) }
-                if ( result.size() == n ) return result;
+                if ( resultMap.size() < n ) { resultMap.put( it, topCounter ) }
             }
         }
 
-        return result;
+        assert ( resultMap.size() <= n );
+        return   resultMap;
     }
 
 
-
-
    /**
-    * Creates a "top counters Map":
-    * - Key (Long)                 - top N counter found in the map specified.
-    * - Value (Collection<String>) - original map's keys that were mapped to that key (counter).
-    *                                No more than N Strings are kept in Collection:
-    *                                if there are more - they're discarded.
+    * Creates a small "top counters" Map (of size n) from a BIG "key => counter" maps:
     *
-    * "Top N counter" means that a counter is in "top N" elements if all original counters
-    * (values of the map specified) were sorted but we <b>use no sorting here</b> as it's not needed.
+    * - Key (Long)                 - top n counters found in the map specified
+    * - Value (Collection<String>) - original map's keys that were mapped to that key (counter).
+    *                                (no more than n)
+    *
+    * "Top n counter" means that a counter is in "top n" elements if all original counters
+    * (values of the map specified) were sorted but we use no sorting here since it's not needed.
     */
-    private static Map<Long, Collection<String>> topCountersMap ( int n, Map<String, L> map )
+    private static Map<Long, Collection<String>> topCountersMap ( int n, Map<String, L> ... maps )
     {
-        assert (( n > 0 ) && ( map != null ));
+        assert (( n > 0 ) && ( maps != null ));
 
         Map<Long, Collection<String>> topCountersMap = new HashMap<Long, Collection<String>>( n );
-        long[]                        minValue       = [ Long.MAX_VALUE ];
+        long[]                        minCounter     = [ Long.MAX_VALUE ]; // Currently known minimal counter
 
-        map.each
+        maps.each
         {
-            String key, L l ->
+            Map<String, L> map ->
 
-            long     counter = l.counter();
-            assert ( counter > 0 );
-
-            if (( topCountersMap.size() == n ) && ( counter > minValue ) && ( ! topCountersMap[ counter ] ))
+            map.each
             {
-                topCountersMap.remove( minValue );
-            }
+                String key, L l ->
 
-            if (( topCountersMap.size() < n ) && ( ! topCountersMap[ counter ] ))
-            {
-                topCountersMap[ counter ] = new ArrayList<String>( n );
-                minValue[ 0 ]             = counter;
-                topCountersMap.keySet().each{ minValue[ 0 ] = (( it < minValue[ 0 ] ) ? it : minValue[ 0 ] ) }
-            }
+                long     counter = l.counter();
+                assert ( counter > 0 );
 
-            if ( topCountersMap.containsKey( counter ) && ( topCountersMap[ counter ].size() < n ))
-            {
-                topCountersMap[ counter ] << key;
+                if (( topCountersMap.size() == n ) && ( counter > minCounter[ 0 ] ) && ( ! topCountersMap[ counter ] ))
+                {
+                    topCountersMap.remove( minCounter[ 0 ] );
+                }
+
+                if (( topCountersMap.size() < n ) && ( ! topCountersMap[ counter ] ))
+                {
+                    topCountersMap[ counter ] = new ArrayList<String>( n );
+                    minCounter[ 0 ]           = counter;
+                    topCountersMap.keySet().each{ minCounter[ 0 ] = (( it < minCounter[ 0 ] ) ? it : minCounter[ 0 ] ) }
+                }
+
+                if ( topCountersMap.containsKey( counter ) && ( topCountersMap[ counter ].size() < n ))
+                {
+                    topCountersMap[ counter ] << key;
+                }
             }
         }
 

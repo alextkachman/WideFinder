@@ -16,6 +16,12 @@ class Start
     private static final String HTTP_METHODS = 'GET|POST|HEAD|PUT|OPTIONS|DELETE|TRACE|CONNECT';
 
 
+   /**
+    * Top N counter
+    */
+    private static final int N = 10;
+
+
     /**
      * Single line pattern
      */
@@ -59,17 +65,19 @@ class Start
             fis.close();
         }
 
-// TODO
-//        report( 'Top 10 articles (by hits)',      Stat.top( 10, stat.getArticlesToHits()));
-//        report( 'Top 10 URIs (by bytes count)',   Stat.top( 10, stat.getUriToByteCounts()));
-//        report( 'Top 10 URIs (by 404 responses)', Stat.top( 10, stat.getUriTo404()));
+        Map<String, Long> topArticles = Stat.top( N, stat.articlesToHits());
+
+        report( "Top $N articles (by hits)",          topArticles );
+        report( "Top $N URIs (by bytes count)",       Stat.top( N, stat.uriToByteCounts()));
+        report( "Top $N URIs (by 404 responses)",     Stat.top( N, stat.uriTo404()));
+        report( "Top $N clients (by hot articles)",   Stat.top( N, topArticles, stat.articlesToClients()));
+        report( "Top $N referrers (by hot articles)", Stat.top( N, topArticles, stat.articlesToReferrers()));
     }
 
 
     static void report( String title, Map<String, Long> map )
     {
-// TODO
-//        println "$title: \n* ${ map.entrySet().collect{ "${ it.key } : ${ it.value }" }.join( "\n* " ) }"
+        println ">>> $title <<<: \n* ${ map.entrySet().collect{ Map.Entry entry -> "${ entry.key } : ${ entry.value }" }.join( "\n* " ) }"
     }
 
 
