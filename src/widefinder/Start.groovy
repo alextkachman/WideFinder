@@ -38,6 +38,7 @@ class Start
 
     public static void main ( String[] args )
     {
+        long   t            = System.currentTimeMillis();
         int    bufferSizeMb = 10;
         int    cpuNum       = Runtime.getRuntime().availableProcessors();
         File   file         = new File( args[ 0 ] );
@@ -61,6 +62,8 @@ class Start
         report( "Top $N URIs (by 404 responses)",     Stat.top( N, stat.uriTo404()));
         report( "Top $N clients (by hot articles)",   Stat.top( N, topArticles, stat.articlesToClients()));
         report( "Top $N referrers (by hot articles)", Stat.top( N, topArticles, stat.articlesToReferrers()));
+        
+        println "[${ System.currentTimeMillis() - t }] ms"
     }
 
 
