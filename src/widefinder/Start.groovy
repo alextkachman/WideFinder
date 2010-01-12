@@ -23,7 +23,9 @@ class Start
 
 
     /**
-     * Single line pattern
+     * Single line pattern:
+     * pool-72-78-150-237.phlapa.east.verizon.net - - [17/Jun/2007:21:37:17 -0700] "GET /ongoing/ongoing.atom HTTP/1.1" 304 - "-" "NetNewsWire/2.1.1 (Mac OS X; Lite; http://ranchero.com/netnewswire/)"
+     * 222-155-178-51.jetstream.xtra.co.nz - - [17/Jun/2007:21:37:25 -0700] "GET /ongoing/When/200x/2007/06/15/IMGP5832.png HTTP/1.1" 200 18688 "http://planetsun.org/" "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; (R1 1.5); .NET CLR 1.1.4322)"
      */
     private static final Pattern PATTERN =
         Pattern.compile( /^(\S+).+?"($HTTP_METHODS) (\S+) HTTP\/1\.(?:1|0)" (\d+) (\S+) "(.+?)"/ );
@@ -197,7 +199,7 @@ class Start
     private static void analyze ( String line, Stat stat )
     {
         Matcher m = ( line =~ PATTERN );
-        assert ( m && m[ 0 ] ), "Line [$line] doesn't match"
+        assert  m, "Line [$line] doesn't match"
 
 // TODO
 // http://code.google.com/p/groovypptest/issues/detail?id=30
