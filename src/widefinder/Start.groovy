@@ -135,7 +135,7 @@ class Start
                 assert (                                    ( ! endOfLine( array[ startIndex ] )));
                 assert (( endIndex == buffer.position()) || ( ! endOfLine( array[ endIndex ]   )));
 
-                totalLines += countLines( array, startIndex, endIndex, stat );
+                totalLines += processLinesPerThread( array, startIndex, endIndex, stat );
                 startIndex  = endIndex;
             }
 
@@ -157,7 +157,7 @@ class Start
     * - it ends   at index "endIndex" - 1
     * - it contains a number of complete rows (no half rows)
     */
-    private static int countLines( byte[] array, int startIndex, int endIndex, Stat stat )
+    private static int processLinesPerThread( byte[] array, int startIndex, int endIndex, Stat stat )
     {
         assert (( startIndex >=0 ) &&
                     ( endIndex <= array.length ) &&
