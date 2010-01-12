@@ -29,13 +29,6 @@ class Start
         Pattern.compile( /^(\S+).+?"($HTTP_METHODS) (\S+) HTTP\/1\.(?:1|0)" (\d+) (\S+) "(.+?)"/ );
 
 
-    /**
-     * Array of booleans where only "end of line" indices (10, 13) are set to "true"
-     */
-    private static final boolean[] BOOLEANS =
-        ( 0 .. 255 ).collect{ ( it == ( int ) '\r' ) || ( it == ( int ) '\n' ) }
-
-
     public static void main ( String[] args )
     {
         long   t            = System.currentTimeMillis();
@@ -62,8 +55,8 @@ class Start
         report( "Top $N URIs (by 404 responses)",     Stat.top( N, stat.uriTo404()));
         report( "Top $N clients (by hot articles)",   Stat.top( N, topArticles, stat.articlesToClients()));
         report( "Top $N referrers (by hot articles)", Stat.top( N, topArticles, stat.articlesToReferrers()));
-        
-        println "[${ System.currentTimeMillis() - t }] ms"
+
+        println "[$lines] lines, [${ System.currentTimeMillis() - t }] ms"
     }
 
 
@@ -242,6 +235,6 @@ class Start
     */
     private static boolean endOfLine( byte b )
     {
-        return BOOLEANS[ b ];
+        return ( b == 0x0A ); // "\n"
     }
 }
