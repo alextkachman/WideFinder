@@ -13,12 +13,12 @@ class Stat
     private final Map<String, Map<String, L>> articlesToClients   = new HashMap<String, Map<String, L>>();
     private final Map<String, Map<String, L>> articlesToReferrers = new HashMap<String, Map<String, L>>();
 
+
     Stat ()
     {
     }
 
 
-    // TODO
     Map<String, L>              articlesToHits()      { return this.@articlesToHits      }
     Map<String, L>              uriToByteCounts()     { return this.@uriToByteCounts     }
     Map<String, L>              uriTo404()            { return this.@uriTo404            }

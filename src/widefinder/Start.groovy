@@ -45,25 +45,14 @@ class Start
 
         assert file.isFile();
 
-        println ( [ "Buffer Size", "CPU #", "Lines #", "Time (sec)" ].join( '\t' ));
-
-        long            t          = System.currentTimeMillis();
         int             bufferSize = Math.min( file.size(), ( bufferSizeMb * 1024 * 1024 ));
         ByteBuffer      buffer     = ByteBuffer.allocate( bufferSize );
         FileInputStream fis        = new FileInputStream( file );
         FileChannel     channel    = fis.getChannel();
+        long            lines      = processLines( channel, buffer, cpuNum, stat );
 
-        try
-        {
-            print ( [ bufferSize, cpuNum, "" ].join( '\t' ));
-            long lines = countLines( channel, buffer, cpuNum, stat );
-            println ([ lines, (( System.currentTimeMillis() - t ) / 1000 ) ].join( '\t' ));
-        }
-        finally
-        {
-            channel.close();
-            fis.close();
-        }
+        channel.close();
+        fis.close();
 
         Map<String, Long> topArticles = Stat.top( N, stat.articlesToHits());
 
@@ -84,7 +73,7 @@ class Start
    /**
     * Reads number of lines in the channel specified
     */
-    private static long countLines ( FileChannel channel, ByteBuffer buffer, int cpuNum, Stat stat )
+    private static long processLines ( FileChannel channel, ByteBuffer buffer, int cpuNum, Stat stat )
     {
         buffer.rewind();
 
@@ -96,10 +85,10 @@ class Start
          */
         for ( int remaining = 0; ( channel.position() < channel.size()); )
         {
-            int    bytesRead = channel.read( buffer );
-            totalBytesRead  += bytesRead;
-            byte[] array     = buffer.array();
-            boolean isEof    = ( channel.position() == channel.size());
+            int  bytesRead  = channel.read( buffer );
+            totalBytesRead += bytesRead;
+            byte[] array    = buffer.array();
+            boolean isEof   = ( channel.position() == channel.size());
 
             assert (( bytesRead > 0 ) &&
                         (( bytesRead + remaining ) == buffer.position()) &&
