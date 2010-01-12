@@ -105,7 +105,7 @@ class Stat
         {
             String topArticle ->
 
-            if ( countersMap[ topArticle ] ) { maps << countersMap[ topArticle ] }
+            if ( countersMap[ topArticle ] != null ) { maps << countersMap[ topArticle ] }
         }
 
         return top( n, maps.toArray( new Map<String, L>[ maps.size() ] ));
